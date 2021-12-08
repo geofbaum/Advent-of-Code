@@ -46,7 +46,7 @@ def part2(lines):
 
 def main():
 	with open("day8.txt") as f:
-		s = f.readlines() #.strip().split("\n")
+		s = f.readlines()
 	print(part1(s))
 	print(part2(s))
 
