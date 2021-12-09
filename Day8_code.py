@@ -1,52 +1,41 @@
-from itertools import permutations
+import itertools
 
-def part1(lines):
-    count = 0
-    d = {2: 1, 4: 4, 3: 7, 7: 8}
-    for line in lines:
-        line = line.strip()
-        line = line.split(" | ")[1]
-        count += sum(1 for word in line.split() if len(word) in d)
-    return count
+def part1(s):
+	c = 0
+	for line in s:
+    		a,b = line.split(" | ")
+    		b = b.split(" ")
+	    	for x in b:
+        		if len(x) in (2,3,4,7):
+            		c += 1
+	print(c)
+	return
 
-def part2(lines):
-    known = ["abcefg", "cf", "acdeg", "acdfg", "bcdf", "abdfg", "abdefg", "acf", "abcdefg", "abcdfg"]
-    known2 = {o: i for (i, o) in enumerate(known)}
+def part2(s):
+	m = {"acedgfb":8, "cdfbe":5, "gcdfa":2, "fbcad":3, "dab":7,
+         "cefabd":9, "cdfgeb":6, "eafb":4, "cagedb":0, "ab":1}
 
-    count = 0
-    for line in lines:
-        line = line.strip()
-        inp = line.split(" | ")[0]
-        out = line.split(" | ")[1]
+	m = {"".join(sorted(k)):v for k,v in m.items()}
 
-        for permute in permutations(list("abcdefg")):
-            d = dict()
-            for k, v in zip("abcdefg", permute):
-                d[k] = v
-
-            found = True
-
-            for word in inp.split():
-                new = "".join(sorted([d[el] for el in word]))
-                if new not in known:
-                    found = False
-                    break
-
-            if found:
-                digits = ""
-                for word in out.split():
-                    real_out = "".join(sorted([d[el] for el in word]))
-                    digits += str(known2[real_out])
-
-                count += int(digits)
-                break
-
-
-    return count
+	ans = 0
+	for line in s:
+    		a,b = line.split(" | ")
+    		a = a.split(" ")
+   		b = b.split(" ")
+    		for perm in itertools.permutations("abcdefg"):
+        		pmap = {a:b for a,b in zip(perm,"abcdefg")}
+        		anew = ["".join(pmap[c] for c in x) for x in a]
+        		bnew = ["".join(pmap[c] for c in x) for x in b]
+        		if all("".join(sorted(an)) in m for an in anew):
+            			bnew = ["".join(sorted(x)) for x in bnew]
+            			ans += int("".join(str(m[x]) for x in bnew))
+            			break
+	print(ans)
+	return
 
 def main():
-	with open("day8.txt") as f:
-		s = f.readlines()
+	with open("C:\\Users\\Ge007543\\Documents\\day8.txt") as f:
+    		s = f.read().strip().split("\n")
 	print(part1(s))
 	print(part2(s))
 
