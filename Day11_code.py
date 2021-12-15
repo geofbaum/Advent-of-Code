@@ -1,80 +1,71 @@
-inp ='Day13.txt'
+def get_deltas():
+    return [(0, 1), (0, -1), (1, 0), (1, 1), (1, -1), (-1, 0), (-1, 1), (-1, -1)]
 
-#part1
-dotsl, folds = [x for x in open(inp).read().strip().split('\n\n')]
 
-dots = set()
-for line in dotsl.split("\n"):
-	x,y = line.split(",")
-	dots.add((int(x), int(y)))
+def print_grid(grid):
+    for l in grid:
+        print(' '.join(map(str, l)))
+    print()
 
-def foldx(p, x):
-	res = set()
-	for pos in p:
-		if pos[0]<x:
-			res.add(pos)
-		else:
-			res.add((2*x-pos[0], pos[1]))
-	return res
 
-def foldy(p, y):
-	res = set()
-	for pos in p:
-		if pos[1]<y:
-			res.add(pos)
-		else:
-			res.add((pos[0], 2*y-pos[1]))
-	return res
+def cycle(grid):
+    flashes = 0
 
-for inst in folds.split("\n")[:1]:
-	d,amt = inst.split()[2].split("=")
-	if d == 'x':
-		dots = foldx(dots, int(amt))
-	else:
-		dots = foldy(dots, int(amt))
-	print(len(dots))
+    visited = set()
+    ready = deque()
 
-#part2
-dotsl, folds = [x for x in open(inp).read().strip().split('\n\n')]
+    for x in range(len(grid)):
+        for y in range(len(grid[0])):
+            grid[x][y] += 1
+            if grid[x][y] > 9:
+                ready.append((x, y))
+                visited.add((x, y))
 
-dots = set()
-for line in dotsl.split("\n"):
-	x,y = line.split(",")
-	dots.add((int(x), int(y)))
+    while ready:
+        nx, ny = ready.popleft()
+        for dx, dy in get_deltas():
+            if 0 <= nx+dx < len(grid) and 0 <= ny+dy < len(grid[0]):
+                grid[nx+dx][ny+dy] += 1
+                if grid[nx+dx][ny+dy] > 9 and (nx+dx, ny+dy) not in visited:
+                    ready.append((nx+dx, ny+dy))
+                    visited.add((nx+dx, ny+dy))
 
-def foldx(p, x):
-	res = set()
-	for pos in p:
-		if pos[0]<x:
-			res.add(pos)
-		else:
-			res.add((2*x-pos[0], pos[1]))
-	return res
+    for x in range(len(grid)):
+        for y in range(len(grid[0])):
+            if grid[x][y] > 9:
+                grid[x][y] = 0
+                flashes += 1
 
-def foldy(p, y):
-	res = set()
-	for pos in p:
-		if pos[1]<y:
-			res.add(pos)
-		else:
-			res.add((pos[0], 2*y-pos[1]))
-	return res
+    return flashes
 
-for inst in folds.split("\n"):
-	d,amt = inst.split()[2].split("=")
-	if d == 'x':
-		dots = foldx(dots, int(amt))
-	else:
-		dots = foldy(dots, int(amt))
 
-ys = [pos[1] for pos in dots]
-xs = [pos[0] for pos in dots]
-for y in range(min(ys), max(ys)+1):
-	s = ""
-	for x in range(min(xs), max(xs)+1):
-		if (x,y) in dots:
-			s += "X"
-		else:
-			s += " "
-	print(s)
-print()
+def part1():
+    grid = [list(map(int, list(l.strip()))) for l in open("C:\\Users\\Ge007543\\Documents\\day11.txt")]
+
+    flashes = 0
+
+    for _ in range(100):
+        flashes += cycle(grid)
+
+    print(flashes)
+
+
+def part2():
+
+    grid = [list(map(int, list(l.strip()))) for l in open("C:\\Users\\Ge007543\\Documents\\day11.txt")]
+
+    ready = deque()
+
+    cnt = 0
+    while True:
+        if all([all([i == 0 for i in l]) for l in grid]):
+            break
+        cnt += 1
+        cycle(grid)
+
+    print(cnt)
+
+
+if __name__ == "__main__":
+	part1()
+	part2()
